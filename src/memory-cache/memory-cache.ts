@@ -1,30 +1,50 @@
 import * as fs from "fs";
-import { envInt } from "../common/env";
-
-const _10mb = 1024 * 1024 * 10;
-const initialBufferSize = envInt("FS_CACHE_BUFFER_SIZE_INITIAL", _10mb);
+import { KeyStore } from "./key-store";
+import { ValueStore } from "./value-store";
 // Buffer [length, num_items, item#1[key, value], item#2[key, value]]
+/**
+ *  Key store
+ *     0 1 2 3 4 5 6 7 8
+ * 0 [ length | num-items ]
+ * 1 [ size|utf-8 string, size|address ]
+ * 2 [                   ]
+ *
+ *  Value store
+ *     0 1 2 3 4 5 6 7 8
+ * 0 [ length | num-items ]
+ * 1 [ data, data, data   ]
+ * 2 [ data, data, data   ]
+ *
+ */
 
 export class MemoryCache {
-  private _buffer: SharedArrayBuffer;
-  get buffer(): SharedArrayBuffer {
-    return this._buffer;
+  keyStore: KeyStore;
+  valueStore: ValueStore;
+
+  constructor([
+    keyBuffer = undefined,
+    valueBuffer = undefined
+  ]: SharedArrayBuffer[]) {
+    this.keyStore = new KeyStore(keyBuffer);
+    this.valueStore = new ValueStore(valueBuffer);
   }
 
-  private view: DataView;
-
-  constructor(buffer?: SharedArrayBuffer) {
-    if (buffer) {
-      this._buffer = buffer;
-    } else {
-      this._buffer = new SharedArrayBuffer(initialBufferSize);
-    }
-    this.view = new DataView(this._buffer);
+  has(key: fs.PathLike | number): boolean {
+    // atomic.get
+    return false;
   }
   get(key: fs.PathLike | number): any {
     // atomic.get
+    if (this.has(key)) {
+      const offset = this.keyStore.get(key);
+      const data = this.valueStore.get(offset);
+      return data;
+    }
   }
-  set(key: fs.PathLike | number, data: any) {
+  set(key: fs.PathLike | number, data: Buffer | string) {
     // atomic.set
+    const _data = typeof data === "string" ? Buffer.from(data) : data;
+    const offset = this.valueStore.set(_data);
+    this.keyStore.set(key, offset);
   }
 }

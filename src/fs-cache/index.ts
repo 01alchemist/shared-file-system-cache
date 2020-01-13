@@ -20,8 +20,12 @@ export class SharedFileSystem {
     this.cache = new MemoryCache(buffer);
   }
   readFileSync(path: string, encoding?: string) {
+    if (this.cache.has(path)) {
+      return this.cache.get(path);
+    }
     const content = fs.readFileSync(path, encoding);
     this.cache.set(path, content);
+    return content;
   }
   readFile(
     path: fs.PathLike | number,
@@ -32,14 +36,16 @@ export class SharedFileSystem {
       | null,
     callback: (err: NodeJS.ErrnoException | null, data: string | Buffer) => void
   ) {
-    const content = fs.readFile(
+    fs.readFile(
       path,
       options,
       (err: NodeJS.ErrnoException | null, data: string | Buffer) => {
+        if (!err) {
+          this.cache.set(path, data);
+        }
         if (callback) callback(err, data);
       }
     );
-    this.cache.set(path, content);
   }
 }
 
