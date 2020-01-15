@@ -16,11 +16,15 @@
     "watch": "webpack --colors --watch --progress",
     "tdd": "jest --config=./jest.json --watch",
     "test": "echo 'No unit tests found!'",
-    "lint": "prettier --check '**/*.{js,json,ts,gql,graphql}'"
+    "lint": "prettier --check '**/*.{js,json,ts,gql,graphql}'",
+    "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --runtime none --sourceMap --validate --debug --sharedMemory=800 --importMemory --enable=threads",
+    "asbuild:optimized": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --runtime none --sourceMap --validate --optimize --sharedMemory=800 --importMemory --enable=threads",
+    "asbuild": "npm run asbuild:untouched"
   },
   "devDependencies": {
     "@types/jest": "^24.0.15",
     "@types/node": "^12.0.8",
+    "assemblyscript": "^0.8.1",
     "clean-webpack-plugin": "2.0.2",
     "dotenv": "^8.0.0",
     "fs-extra": "^8.0.1",

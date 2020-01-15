@@ -5,14 +5,25 @@
     "module": "commonjs",
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "lib": ["es2015", "esnext.asynciterable"],
+    "lib": [
+      "es2015",
+      "esnext.asynciterable"
+    ],
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@config": ["./src/config"],
-      "@components/*": ["./src/components/*"]
+      "@config": [
+        "./src/config"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ]
     }
   },
-  "exclude": ["node_modules"],
-  "include": ["src/*.ts"]
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "src/*.ts"
+  ]
 }

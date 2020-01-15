@@ -15,13 +15,7 @@ describe("Key store test suite", () => {
       let keyStore;
       expect(() => { keyStore = new KeyStore(buffer) }).not.toThrowError()
       expect(keyStore.buffer).toBe(buffer)
-      expect(keyStore.bytesAvailable).toBe(buffer)
-    })
-    it("Should create a DataView of SharedArrayBuffer", () => {
-      const buffer = new SharedArrayBuffer(1)
-      let keyStore;
-      expect(() => { keyStore = new KeyStore(buffer) }).not.toThrowError()
-      expect(keyStore.view).toBe(buffer)
+      expect(keyStore.bytesAvailable).toBe(1)
     })
   })
 })
